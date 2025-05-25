@@ -1,6 +1,6 @@
-use crate::matrix::*;
-use crate::shared::*;
-use crate::vector::*;
+use ft_matrix::Matrix;
+use ft_matrix::Vector;
+use ft_matrix::lerp;
 
 pub fn run() {
     println!("{}", lerp(0., 1., 0.));

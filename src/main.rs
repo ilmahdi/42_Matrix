@@ -1,8 +1,3 @@
-mod vector;
-mod matrix;
-mod scalar;
-mod complex;
-mod shared;
 mod tests {
     pub mod ex00;
     pub mod ex01;

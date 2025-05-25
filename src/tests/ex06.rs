@@ -1,4 +1,5 @@
-use crate::vector::*;
+use ft_matrix::Vector;
+use ft_matrix::cross_product;
 
 pub fn run() {
     let u = Vector::from([0., 0., 1.]);

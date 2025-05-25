@@ -66,7 +66,6 @@ impl<K: Scalar> Index<usize> for Vector<K> {
 //  Member Functions                                                          //
 /* -------------------------------------------------------------------------- */
 
-
 impl<K: Clone> Vector<K> {
     pub fn new(vec: Vec<K>) -> Self {
         Self { data: vec }
@@ -76,6 +75,12 @@ impl<K: Clone> Vector<K> {
 impl<K: Scalar> Vector<K> {
     pub fn size(&self) -> usize {
         self.data.len()
+    }
+}
+
+impl<K: Scalar> Vector<K> {
+    pub fn data(&self) -> &[K] {
+        &self.data
     }
 }
 
@@ -140,39 +145,6 @@ impl<K: Scalar> Vector<K> {
         }
         res
     }
-}
-
-/* -------------------------------------------------------------------------- */
-//  Static Functions                                                          //
-/* -------------------------------------------------------------------------- */
-
-pub fn linear_combination<K: Scalar>(u: &[Vector<K>], coefs: &[K]) -> Vector<K> {
-    let mut result_data = vec![K::default(); u[0].size()];
-
-    for (v, &c) in u.iter().zip(coefs) {
-        for (res, &val) in result_data.iter_mut().zip(&v.data) {
-            *res = res.mul_add(c, val);
-        }
-    }
-
-    Vector { data: result_data }
-}
-pub fn angle_cos<K: Scalar>(u: &Vector<K>, v: &Vector<K>) -> f32 {
-    let mut res: f32 = u.dot(v).to_f32() / (u.norm() * v.norm());
-    if res < -1.0 {
-        res = -1.0;
-    } else if res > 1.0 {
-        res = 1.0;
-    }
-    res
-}
-
-pub fn cross_product<K: Scalar>(u: &Vector<K>, v: &Vector<K>) -> Vector<K> {
-    let x = u.data[1] * v.data[2] - u.data[2] * v.data[1];
-    let y = u.data[2] * v.data[0] - u.data[0] * v.data[2];
-    let z = u.data[0] * v.data[1] - u.data[1] * v.data[0];
-
-    Vector::from([x, y, z])
 }
 
 /* -------------------------------------------------------------------------- */

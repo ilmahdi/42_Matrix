@@ -1,5 +1,5 @@
-use crate::matrix::*;
-use crate::vector::*;
+use ft_matrix::Matrix;
+use ft_matrix::Vector;
 
 pub fn run() {
     let mut u = Matrix::new(vec![vec![1.6, 0.5], vec![3.6, 1.], vec![5., 5.]]);

@@ -1,4 +1,4 @@
-use crate::matrix::*;
+use ft_matrix::Matrix;
 
 pub fn run() {
     let u = Matrix::from([[1., -1.], [-1., 1.]]);

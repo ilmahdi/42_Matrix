@@ -1,4 +1,4 @@
-use crate::vector::*;
+use ft_matrix::Vector;
 
 pub fn run() {
     let u = Vector::from([0., 0., 0.]);

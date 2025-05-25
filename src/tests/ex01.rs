@@ -1,4 +1,5 @@
-use crate::vector::*;
+use ft_matrix::Vector;
+use ft_matrix::linear_combination;
 
 pub fn run() {
     let e1 = Vector::from([1., 0., 0.]);

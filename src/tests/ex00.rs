@@ -1,5 +1,5 @@
-use crate::matrix::*;
-use crate::vector::*;
+use ft_matrix::Matrix;
+use ft_matrix::Vector;
 
 pub fn run() {
     let mut u = Vector::new(vec![2., 3.]);
@@ -22,10 +22,7 @@ pub fn run() {
     // [4.0]
     // [6.0]
 
-    let mut u = Matrix::from([
-        [1., 2.],
-        [3., 4.],
-    ]);
+    let mut u = Matrix::from([[1., 2.], [3., 4.]]);
     let v = Matrix::from([[7., 4.], [-2., 2.]]);
     u.add(&v);
     println!("{}", u);
