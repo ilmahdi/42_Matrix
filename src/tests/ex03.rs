@@ -1,8 +1,6 @@
 use crate::vector::*;
 
 pub fn run() {
-    println!("\nRunning dot product test...\n");
-
     let u = Vector::from([0., 0.]);
     let v = Vector::from([1., 1.]);
     println!("{}", u.dot(&v));

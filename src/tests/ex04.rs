@@ -1,8 +1,6 @@
 use crate::vector::*;
 
 pub fn run() {
-    println!("\nRunning norm test...\n");
-
     let u = Vector::from([0., 0., 0.]);
     println!("{}, {}, {}", u.norm_1(), u.norm(), u.norm_inf());
     // 0.0, 0.0, 0.0

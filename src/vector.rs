@@ -1,6 +1,6 @@
 use crate::scalar::Scalar;
 use std::fmt::{Debug, Display, Formatter, Result};
-use std::ops::{AddAssign, MulAssign, SubAssign};
+use std::ops::{AddAssign, Index, MulAssign, SubAssign};
 
 /* -------------------------------------------------------------------------- */
 //  Vector Struct                                                             //
@@ -18,6 +18,12 @@ impl<K: Clone, const N: usize> From<[K; N]> for Vector<K> {
         Self {
             data: Vec::from(array),
         }
+    }
+}
+
+impl<K: Clone> From<Vec<K>> for Vector<K> {
+    fn from(vec: Vec<K>) -> Self {
+        Self { data: vec }
     }
 }
 
@@ -48,9 +54,25 @@ impl<K: Scalar> MulAssign<K> for Vector<K> {
     }
 }
 
+impl<K: Scalar> Index<usize> for Vector<K> {
+    type Output = K;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.data[index]
+    }
+}
+
 /* -------------------------------------------------------------------------- */
 //  Member Functions                                                          //
 /* -------------------------------------------------------------------------- */
+
+
+impl<K: Clone> Vector<K> {
+    pub fn new(vec: Vec<K>) -> Self {
+        Self { data: vec }
+    }
+}
+
 impl<K: Scalar> Vector<K> {
     pub fn size(&self) -> usize {
         self.data.len()
@@ -143,6 +165,14 @@ pub fn angle_cos<K: Scalar>(u: &Vector<K>, v: &Vector<K>) -> f32 {
         res = 1.0;
     }
     res
+}
+
+pub fn cross_product<K: Scalar>(u: &Vector<K>, v: &Vector<K>) -> Vector<K> {
+    let x = u.data[1] * v.data[2] - u.data[2] * v.data[1];
+    let y = u.data[2] * v.data[0] - u.data[0] * v.data[2];
+    let z = u.data[0] * v.data[1] - u.data[1] * v.data[0];
+
+    Vector::from([x, y, z])
 }
 
 /* -------------------------------------------------------------------------- */

@@ -1,8 +1,6 @@
 use crate::vector::*;
 
 pub fn run() {
-    println!("\nRunning cosine test...\n");
-
     let u = Vector::from([1., 0.]);
     let v = Vector::from([1., 0.]);
     println!("{}", angle_cos(&u, &v));
