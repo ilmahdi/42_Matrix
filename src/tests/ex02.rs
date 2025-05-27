@@ -1,6 +1,6 @@
-use ft_matrix::Matrix;
-use ft_matrix::Vector;
-use ft_matrix::lerp;
+use matrix::Matrix;
+use matrix::Vector;
+use matrix::lerp;
 
 pub fn run() {
     println!("{}", lerp(0., 1., 0.));

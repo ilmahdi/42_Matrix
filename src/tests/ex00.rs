@@ -1,5 +1,5 @@
-use ft_matrix::Matrix;
-use ft_matrix::Vector;
+use matrix::Matrix;
+use matrix::Vector;
 
 pub fn run() {
     let mut u = Vector::new(vec![2., 3.]);

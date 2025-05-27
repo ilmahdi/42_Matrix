@@ -1,5 +1,5 @@
-use ft_matrix::Vector;
-use ft_matrix::angle_cos;
+use matrix::Vector;
+use matrix::angle_cos;
 
 pub fn run() {
     let u = Vector::from([1., 0.]);

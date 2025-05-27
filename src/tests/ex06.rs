@@ -1,5 +1,5 @@
-use ft_matrix::Vector;
-use ft_matrix::cross_product;
+use matrix::Vector;
+use matrix::cross_product;
 
 pub fn run() {
     let u = Vector::from([0., 0., 1.]);

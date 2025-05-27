@@ -1,4 +1,4 @@
-use ft_matrix::Vector;
+use matrix::Vector;
 
 pub fn run() {
     let u = Vector::from([0., 0., 0.]);
