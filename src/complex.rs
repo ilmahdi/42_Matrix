@@ -69,6 +69,13 @@ impl SubAssign for Complex {
     }
 }
 
+impl MulAssign<f32> for Complex {
+    fn mul_assign(&mut self, rhs: f32) {
+        self.re *= rhs;
+        self.im *= rhs;
+    }
+}
+
 impl Mul for Complex {
     type Output = Self;
     fn mul(self, other: Self) -> Self {

@@ -437,7 +437,7 @@ mod tests {
     }
 
     #[test]
-    fn test_matrix_add_sub_scl() {
+    fn test_matrix_add_sub_scl_scalar() {
         let mut m1 = Matrix::from([[10.0, 20.0], [30.0, 40.0]]);
         let m2 = Matrix::from([[1.0, 2.0], [3.0, 4.0]]);
 
@@ -479,21 +479,6 @@ mod tests {
             &vec![vec![42.0, 42.0], vec![42.0, 42.0]]
         );
 
-        // Test with complex numbers (Bonus Exercise 15)
-        let c_m1 = Matrix::from([
-            [Complex::new(1.0, 1.0), Complex::new(2.0, 2.0)],
-            [Complex::new(3.0, 3.0), Complex::new(4.0, 4.0)],
-        ]);
-        let c_m2 = Matrix::from([
-            [Complex::new(5.0, 5.0), Complex::new(6.0, 6.0)],
-            [Complex::new(7.0, 7.0), Complex::new(8.0, 8.0)],
-        ]);
-        let c_result_add = c_m1.add_clone(&c_m2);
-        assert!((c_result_add.data[0][0].re - 6.0).abs() < EPSILON);
-        assert!((c_result_add.data[0][0].im - 6.0).abs() < EPSILON);
-        assert!((c_result_add.data[1][1].re - 12.0).abs() < EPSILON);
-        assert!((c_result_add.data[1][1].im - 12.0).abs() < EPSILON);
-
         // Exercise 00 - Subtract (matrices)
         assert_eq!(
             Matrix::from([[0.0, 0.0], [0.0, 0.0]])
@@ -520,13 +505,6 @@ mod tests {
             &vec![vec![0.0, 0.0], vec![0.0, 0.0]]
         );
 
-        // Test with complex numbers (Bonus Exercise 15)
-        let c_result_sub = c_m1.sub_clone(&c_m2);
-        assert!((c_result_sub.data[0][0].re - -4.0).abs() < EPSILON);
-        assert!((c_result_sub.data[0][0].im - -4.0).abs() < EPSILON);
-        assert!((c_result_sub.data[1][1].re - -4.0).abs() < EPSILON);
-        assert!((c_result_sub.data[1][1].im - -4.0).abs() < EPSILON);
-
         // Exercise 00 - Multiply (matrix scaling)
         assert_eq!(
             Matrix::from([[0.0, 0.0], [0.0, 0.0]]).scl_clone(0.0).data(),
@@ -546,8 +524,31 @@ mod tests {
                 .data(),
             &vec![vec![10.5, 10.5], vec![10.5, 10.5]]
         );
+    }
 
+    #[test]
+    fn test_matrix_add_sub_scl_complex() {
         // Test with complex numbers (Bonus Exercise 15)
+        let c_m1 = Matrix::from([
+            [Complex::new(1.0, 1.0), Complex::new(2.0, 2.0)],
+            [Complex::new(3.0, 3.0), Complex::new(4.0, 4.0)],
+        ]);
+        let c_m2 = Matrix::from([
+            [Complex::new(5.0, 5.0), Complex::new(6.0, 6.0)],
+            [Complex::new(7.0, 7.0), Complex::new(8.0, 8.0)],
+        ]);
+        let c_result_add = c_m1.add_clone(&c_m2);
+        assert!((c_result_add.data[0][0].re - 6.0).abs() < EPSILON);
+        assert!((c_result_add.data[0][0].im - 6.0).abs() < EPSILON);
+        assert!((c_result_add.data[1][1].re - 12.0).abs() < EPSILON);
+        assert!((c_result_add.data[1][1].im - 12.0).abs() < EPSILON);
+
+        let c_result_sub = c_m1.sub_clone(&c_m2);
+        assert!((c_result_sub.data[0][0].re - -4.0).abs() < EPSILON);
+        assert!((c_result_sub.data[0][0].im - -4.0).abs() < EPSILON);
+        assert!((c_result_sub.data[1][1].re - -4.0).abs() < EPSILON);
+        assert!((c_result_sub.data[1][1].im - -4.0).abs() < EPSILON);
+
         let c_result_scl = c_m1.scl_clone(Complex::new(2.0, 0.0)); // Scale by 2
         assert!((c_result_scl.data[0][0].re - 2.0).abs() < EPSILON);
         assert!((c_result_scl.data[0][0].im - 2.0).abs() < EPSILON);
@@ -556,7 +557,7 @@ mod tests {
     }
 
     #[test]
-    fn test_linear_transform_mul_vec() {
+    fn test_linear_transform_mul_vec_scalar() {
         let m1 = Matrix::from([[0.0, 0.0], [0.0, 0.0]]);
         let v1 = Vector::from([1.0, 2.0]);
         assert_eq!(m1.mul_vec(&v1).data(), vec![0.0, 0.0]);
@@ -576,7 +577,10 @@ mod tests {
         let m5 = Matrix::from([[0.5, 0.0], [0.0, 0.5]]);
         let v5 = Vector::from([4.0, 2.0]);
         assert_eq!(m5.mul_vec(&v5).data(), vec![2.0, 1.0]);
+    }
 
+    #[test]
+    fn test_linear_transform_mul_vec_complex() {
         // Test with complex numbers (Bonus Exercise 15)
         let c_m = Matrix::from([
             [Complex::new(1.0, 0.0), Complex::new(0.0, 1.0)],
@@ -591,7 +595,7 @@ mod tests {
     }
 
     #[test]
-    fn test_mul_mat() {
+    fn test_mul_mat_scalar() {
         // Test basic multiplication
         let m1 = Matrix::from([[1.0, 2.0], [3.0, 4.0]]);
         let m2 = Matrix::from([[5.0, 6.0], [7.0, 8.0]]);
@@ -615,7 +619,10 @@ mod tests {
         let expected_3x3 =
             Matrix::from([[30.0, 24.0, 18.0], [84.0, 69.0, 54.0], [138.0, 114.0, 90.0]]);
         assert_eq!(m3x3_a.mul_mat(&m3x3_b), expected_3x3);
+    }
 
+    #[test]
+    fn test_mul_mat_complex() {
         // Test with complex numbers (Bonus Exercise 15)
         let c_m_a = Matrix::from([
             [Complex::new(1.0, 0.0), Complex::new(0.0, 1.0)],
@@ -641,7 +648,7 @@ mod tests {
     }
 
     #[test]
-    fn test_trace() {
+    fn test_trace_scalar() {
         let m1 = Matrix::from([[0.0, 0.0], [0.0, 0.0]]);
         assert!((m1.trace().to_f32() - 0.0).abs() < EPSILON);
 
@@ -656,7 +663,10 @@ mod tests {
 
         let m5 = Matrix::from([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]);
         assert!((m5.trace().to_f32() - 3.0).abs() < EPSILON);
+    }
 
+    #[test]
+    fn test_trace_complex() {
         // Test with complex numbers (Bonus Exercise 15)
         let c_m = Matrix::from([
             [Complex::new(1.0, 1.0), Complex::new(2.0, 2.0)],
@@ -668,7 +678,7 @@ mod tests {
     }
 
     #[test]
-    fn test_transpose() {
+    fn test_transpose_scalar() {
         let m1 = Matrix::from([[0.0, 0.0], [0.0, 0.0]]);
         let expected1 = Matrix::from([[0.0, 0.0], [0.0, 0.0]]);
         assert_eq!(m1.transpose(), expected1);
@@ -688,7 +698,10 @@ mod tests {
         let m5 = Matrix::from(vec![vec![1.0, 2.0], vec![3.0, 4.0], vec![5.0, 6.0]]);
         let expected5 = Matrix::from(vec![vec![1.0, 3.0, 5.0], vec![2.0, 4.0, 6.0]]);
         assert_eq!(m5.transpose(), expected5);
+    }
 
+    #[test]
+    fn test_transpose_complex() {
         // Test with complex numbers (Bonus Exercise 15)
         let c_m = Matrix::from([
             [Complex::new(1.0, 1.0), Complex::new(2.0, 2.0)],
@@ -702,7 +715,7 @@ mod tests {
     }
 
     #[test]
-    fn test_row_echelon() {
+    fn test_row_echelon_scalar() {
         let m1 = Matrix::from([[0.0, 0.0], [0.0, 0.0]]);
         let expected1 = Matrix::from([[0.0, 0.0], [0.0, 0.0]]);
         assert_matrix_approx_eq(&m1.row_echelon(), &expected1, EPSILON);
@@ -727,7 +740,10 @@ mod tests {
         let m6 = Matrix::from([[1.0, 2.0, 3.0], [0.0, 1.0, 4.0], [5.0, 6.0, 0.0]]);
         let expected6 = Matrix::from([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]);
         assert_matrix_approx_eq(&m6.row_echelon(), &expected6, EPSILON);
+    }
 
+    #[test]
+    fn test_row_echelon_complex() {
         // Test with complex numbers (Bonus Exercise 15)
         let c_m = Matrix::from([
             [Complex::new(1.0, 0.0), Complex::new(1.0, 0.0)],
@@ -741,7 +757,7 @@ mod tests {
     }
 
     #[test]
-    fn test_determinant() {
+    fn test_determinant_scalar() {
         let m1 = Matrix::from([[0.0, 0.0], [0.0, 0.0]]);
         assert!((m1.determinant().to_f32() - 0.0).abs() < EPSILON);
 
@@ -769,7 +785,10 @@ mod tests {
         // Test a 3x3 matrix with non-zero determinant
         let m9 = Matrix::from([[1.0, 2.0, 3.0], [0.0, 1.0, 4.0], [5.0, 6.0, 0.0]]);
         assert!((m9.determinant().to_f32() - 1.0).abs() < EPSILON);
+    }
 
+    #[test]
+    fn test_determinant_complex() {
         // Test with complex numbers (Bonus Exercise 15)
         let c_m = Matrix::from([
             [Complex::new(1.0, 0.0), Complex::new(0.0, 1.0)],
@@ -781,7 +800,7 @@ mod tests {
     }
 
     #[test]
-    fn test_inverse() {
+    fn test_inverse_scalar() {
         let m1 = Matrix::from([[1.0, 0.0], [0.0, 1.0]]);
         let expected1 = Matrix::from([[1.0, 0.0], [0.0, 1.0]]);
         assert_matrix_approx_eq(&m1.inverse().unwrap(), &expected1, EPSILON);
@@ -816,7 +835,10 @@ mod tests {
         let identity_result = m_test.mul_mat(&inv_m_test);
         let expected_identity = Matrix::identity(2);
         assert_matrix_approx_eq(&identity_result, &expected_identity, EPSILON);
+    }
 
+    #[test]
+    fn test_inverse_complex() {
         // Test with complex numbers (Bonus Exercise 15)
         let c_m = Matrix::from([
             [Complex::new(1.0, 0.0), Complex::new(0.0, 1.0)],
@@ -836,7 +858,7 @@ mod tests {
     }
 
     #[test]
-    fn test_rank() {
+    fn test_rank_scalar() {
         let m1 = Matrix::from([[0.0, 0.0], [0.0, 0.0]]);
         assert_eq!(m1.rank(), 0);
 
@@ -864,7 +886,10 @@ mod tests {
         // Test a 3x3 matrix with rank 2
         let m9 = Matrix::from([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
         assert_eq!(m9.rank(), 2);
+    }
 
+    #[test]
+    fn test_rank_complex() {
         // Test with complex numbers (Bonus Exercise 15)
         let c_m = Matrix::from([
             [Complex::new(1.0, 0.0), Complex::new(1.0, 0.0)],

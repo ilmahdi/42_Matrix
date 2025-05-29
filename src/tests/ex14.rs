@@ -16,8 +16,8 @@ pub fn run() {
     
     let fov = 120.0 * (PI / 180.0); 
     let ratio = 16.0 / 9.0;
-    let near = 0.1;
-    let far = 100.0;
+    let near = 1.0;
+    let far = 12.0;
 
     let proj = projection(fov, ratio, near, far);
     print(&proj);

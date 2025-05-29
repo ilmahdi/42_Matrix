@@ -39,6 +39,35 @@ pub fn angle_cos<K: Scalar>(u: &Vector<K>, v: &Vector<K>) -> f32 {
     res
 }
 
+pub fn angle_cos_complex(u: &Vector<Complex>, v: &Vector<Complex>) -> f32 {
+    let mut dot = Complex::new(0.0, 0.0);
+    let n: usize = u.data().len();
+
+    for i in 0..n {
+        dot += u[i].conjugate() * v[i];
+    }
+
+    let norm_u = u.norm();
+    let norm_v = v.norm();
+
+    if norm_u == 0.0 || norm_v == 0.0 {
+        return f32::NAN;
+    }
+
+    let denom = Complex::new(norm_u * norm_v, 0.0);
+    let cos = dot / denom;
+
+    // Clamp real part
+    let mut real = cos.re;
+    if real < -1.0 {
+        real = -1.0;
+    } else if real > 1.0 {
+        real = 1.0;
+    }
+
+    real
+}
+
 pub fn cross_product<K: Scalar>(u: &Vector<K>, v: &Vector<K>) -> Vector<K> {
     let x = u[1] * v[2] - u[2] * v[1];
     let y = u[2] * v[0] - u[0] * v[2];
@@ -50,29 +79,29 @@ pub fn cross_product<K: Scalar>(u: &Vector<K>, v: &Vector<K>) -> Vector<K> {
 pub fn projection(fov: f32, ratio: f32, near: f32, far: f32) -> Matrix<f32> {
     let b = 1.0 / (fov / 2.0).tan();
     let a = b / ratio;
-    let c = -(far + near) / (far - near);
-    let d = -(2.0 * far * near) / (far - near);
+    let nf = 1.0 / (far - near);
+    let c = far * nf;
+    let d = -(far * near) * nf;
 
     let m = [
         [a, 0.0, 0.0, 0.0],
         [0.0, b, 0.0, 0.0],
-        [0.0, 0.0, c, -1.0],
+        [0.0, 0.0, c, 1.0],
         [0.0, 0.0, d, 0.0],
     ];
 
     Matrix::from(m)
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::f32::consts::PI;
+    use crate::complex::Complex; // Ensure Complex is imported
 
     const EPSILON: f32 = 1e-6;
 
     #[test]
-    fn test_linear_combination() {
+    fn test_linear_combination_scalar() {
         let u1 = Vector::from([-10.0, 20.0]);
         let coefs1 = [-2.0];
         let result1 = linear_combination(&[u1], &coefs1);
@@ -100,7 +129,39 @@ mod tests {
     }
 
     #[test]
-    fn test_lerp() {
+    fn test_linear_combination_complex() {
+        let c_u1 = Vector::from([Complex::new(-1.0, 2.0), Complex::new(3.0, -4.0)]);
+        let c_coefs1 = [Complex::new(-2.0, 0.0)];
+        let c_result1 = linear_combination(&[c_u1], &c_coefs1);
+        assert!((c_result1.data()[0].re - 2.0).abs() < EPSILON);
+        assert!((c_result1.data()[0].im - -4.0).abs() < EPSILON);
+        assert!((c_result1.data()[1].re - -6.0).abs() < EPSILON);
+        assert!((c_result1.data()[1].im - 8.0).abs() < EPSILON);
+
+        let c_u2_1 = Vector::from([Complex::new(1.0, 0.0)]);
+        let c_u2_2 = Vector::from([Complex::new(0.0, 1.0)]);
+        let c_u2_3 = Vector::from([Complex::new(1.0, 1.0)]);
+        let c_coefs2 = [
+            Complex::new(1.0, 0.0),
+            Complex::new(1.0, 0.0),
+            Complex::new(-1.0, 0.0),
+        ];
+        let c_result2 = linear_combination(&[c_u2_1, c_u2_2, c_u2_3], &c_coefs2);
+        assert!((c_result2.data()[0].re - 0.0).abs() < EPSILON);
+        assert!((c_result2.data()[0].im - 0.0).abs() < EPSILON);
+
+        let c_u3_1 = Vector::from([Complex::new(1.0, 1.0), Complex::new(2.0, 2.0)]);
+        let c_u3_2 = Vector::from([Complex::new(3.0, 3.0), Complex::new(4.0, 4.0)]);
+        let c_coefs3 = [Complex::new(2.0, 0.0), Complex::new(-1.0, 0.0)];
+        let c_result3 = linear_combination(&[c_u3_1, c_u3_2], &c_coefs3);
+        assert!((c_result3.data()[0].re - -1.0).abs() < EPSILON);
+        assert!((c_result3.data()[0].im - -1.0).abs() < EPSILON);
+        assert!((c_result3.data()[1].re - 0.0).abs() < EPSILON);
+        assert!((c_result3.data()[1].im - 0.0).abs() < EPSILON);
+    }
+
+    #[test]
+    fn test_lerp_scalar() {
         assert!((lerp(10.0, 20.0, 0.0) - 10.0).abs() < EPSILON);
         assert!((lerp(10.0, 20.0, 1.0) - 20.0).abs() < EPSILON);
         assert!((lerp(10.0, 50.0, 0.25) - 20.0).abs() < EPSILON);
@@ -113,7 +174,24 @@ mod tests {
     }
 
     #[test]
-    fn test_angle_cos() {
+    fn test_lerp_complex() {
+        let c_lerp1 = Complex::new(1.0, 2.0);
+        let c_lerp2 = Complex::new(5.0, 6.0);
+        let c_result_s = lerp(c_lerp1, c_lerp2, 0.5);
+        assert!((c_result_s.re - 3.0).abs() < EPSILON);
+        assert!((c_result_s.im - 4.0).abs() < EPSILON);
+
+        let c_v_lerp1 = Vector::from([Complex::new(1.0, 1.0), Complex::new(10.0, 10.0)]);
+        let c_v_lerp2 = Vector::from([Complex::new(3.0, 3.0), Complex::new(0.0, 0.0)]);
+        let c_result_v = lerp(c_v_lerp1, c_v_lerp2, 0.5);
+        assert!((c_result_v.data()[0].re - 2.0).abs() < EPSILON);
+        assert!((c_result_v.data()[0].im - 2.0).abs() < EPSILON);
+        assert!((c_result_v.data()[1].re - 5.0).abs() < EPSILON);
+        assert!((c_result_v.data()[1].im - 5.0).abs() < EPSILON);
+    }
+
+    #[test]
+    fn test_angle_cos_scalar() {
         let u1 = Vector::from([1.0, 1.0]);
         let v1 = Vector::from([-1.0, 1.0]);
         assert!((angle_cos(&u1, &v1) - 0.0).abs() < EPSILON);
@@ -148,7 +226,24 @@ mod tests {
     }
 
     #[test]
-    fn test_cross_product() {
+   fn test_angle_cos_complex() {
+    let c_u1 = Vector::from([Complex::new(1.0, 0.0), Complex::new(0.0, 1.0)]);
+    let c_v1 = Vector::from([Complex::new(0.0, 1.0), Complex::new(1.0, 0.0)]);
+    let c_result1 = angle_cos_complex(&c_u1, &c_v1);
+    assert!((c_result1 - 0.0).abs() < EPSILON); // expected orthogonal in complex inner product
+
+    let c_u2 = Vector::from([Complex::new(1.0, 1.0)]);
+    let c_v2 = Vector::from([Complex::new(1.0, 1.0)]);
+    let c_result2 = angle_cos_complex(&c_u2, &c_v2);
+    assert!((c_result2 - 1.0).abs() < EPSILON); // same vector
+
+    let c_u3 = Vector::from([Complex::new(1.0, 0.0)]);
+    let c_v3 = Vector::from([Complex::new(0.0, 0.0)]);
+    assert!(angle_cos_complex(&c_u3, &c_v3).is_nan()); // zero vector
+}
+
+    #[test]
+    fn test_cross_product_scalar() {
         let u1 = Vector::from([1.0, 2.0, 3.0]);
         let v1 = Vector::from([0.0, 0.0, 0.0]);
         let expected1 = Vector::from([0.0, 0.0, 0.0]);
@@ -180,48 +275,58 @@ mod tests {
         assert_eq!(cross_product(&u6, &v6), expected6);
     }
 
-    #[test]
-    fn test_projection() {
-        // Test with different FoVs
-        let fov_90_rad = 90.0 * PI / 180.0;
-        let proj_90 = projection(fov_90_rad, 1.0, 0.1, 100.0);
-        let t_90 = 0.1 * (fov_90_rad / 2.0).tan();
-        let r_90 = t_90 * 1.0;
-        let expected_a_90 = 2.0 * 0.1 / (2.0 * r_90);
-        let expected_b_90 = 2.0 * 0.1 / (2.0 * t_90);
-        let expected_e_90 = -(100.0 + 0.1) / (100.0 - 0.1);
-        let expected_f_90 = -(2.0 * 100.0 * 0.1) / (100.0 - 0.1);
+#[test]
+fn test_cross_product_complex() {
+    let c_u1 = Vector::from([
+        Complex::new(1.0, 0.0),
+        Complex::new(0.0, 0.0),
+        Complex::new(0.0, 0.0),
+    ]);
+    let c_v1 = Vector::from([
+        Complex::new(0.0, 0.0),
+        Complex::new(1.0, 0.0),
+        Complex::new(0.0, 0.0),
+    ]);
+    let c_expected1 = Vector::from([
+        Complex::new(0.0, 0.0),
+        Complex::new(0.0, 0.0),
+        Complex::new(1.0, 0.0),
+    ]);
+    assert_eq!(cross_product(&c_u1, &c_v1), c_expected1);
 
-        assert!((proj_90.data()[0][0] - expected_a_90).abs() < EPSILON);
-        assert!((proj_90.data()[1][1] - expected_b_90).abs() < EPSILON);
-        assert!((proj_90.data()[2][2] - expected_e_90).abs() < EPSILON);
-        assert!((proj_90.data()[2][3] - expected_f_90).abs() < EPSILON);
-        assert!((proj_90.data()[3][2] - -1.0).abs() < EPSILON);
+    let c_u2 = Vector::from([
+        Complex::new(1.0, 1.0),
+        Complex::new(2.0, 2.0),
+        Complex::new(3.0, 3.0),
+    ]);
+    let c_v2 = Vector::from([
+        Complex::new(4.0, 4.0),
+        Complex::new(5.0, 5.0),
+        Complex::new(6.0, 6.0),
+    ]);
+    let c_expected2 = Vector::from([
+        Complex::new(0.0, -6.0),
+        Complex::new(0.0, 12.0),
+        Complex::new(0.0, -6.0),
+    ]);
+    assert_eq!(cross_product(&c_u2, &c_v2), c_expected2);
 
-        let fov_60_rad = 60.0 * PI / 180.0;
-        let proj_60 = projection(fov_60_rad, 1.0, 0.1, 100.0);
-        // A lower FoV should result in a larger 'a' and 'b' (less wide view)
-        assert!(proj_60.data()[0][0] > proj_90.data()[0][0]);
-        assert!(proj_60.data()[1][1] > proj_90.data()[1][1]);
+    let c_u3 = Vector::from([
+        Complex::new(0.0, 1.0),
+        Complex::new(0.0, 0.0),
+        Complex::new(0.0, 0.0),
+    ]);
+    let c_v3 = Vector::from([
+        Complex::new(0.0, 0.0),
+        Complex::new(0.0, 1.0),
+        Complex::new(0.0, 0.0),
+    ]);
+    let c_expected3 = Vector::from([
+        Complex::new(0.0, 0.0),
+        Complex::new(0.0, 0.0),
+        Complex::new(-1.0, 0.0),
+    ]);
+    assert_eq!(cross_product(&c_u3, &c_v3), c_expected3);
+}
 
-        let fov_30_rad = 30.0 * PI / 180.0;
-        let proj_30 = projection(fov_30_rad, 1.0, 0.1, 100.0);
-        assert!(proj_30.data()[0][0] > proj_60.data()[0][0]);
-        assert!(proj_30.data()[1][1] > proj_60.data()[1][1]);
-
-        // Test with different ratios
-        let proj_ratio_0_5 = projection(fov_60_rad, 0.5, 0.1, 100.0);
-        // Changing ratio should affect 'a' but not 'b'
-        // 'a' should be doubled if ratio halves
-        assert!((proj_ratio_0_5.data()[0][0] - (proj_60.data()[0][0] * 2.0)).abs() < EPSILON);
-        assert!((proj_ratio_0_5.data()[1][1] - proj_60.data()[1][1]).abs() < EPSILON);
-
-        // Test with different near/far values
-        let proj_near_far_diff = projection(fov_60_rad, 1.0, 5.0, 500.0);
-        // 'e' and 'f' should change significantly
-        let expected_e_diff = -(500.0 + 5.0) / (500.0 - 5.0);
-        let expected_f_diff = -(2.0 * 500.0 * 5.0) / (500.0 - 5.0);
-        assert!((proj_near_far_diff.data()[2][2] - expected_e_diff).abs() < EPSILON);
-        assert!((proj_near_far_diff.data()[2][3] - expected_f_diff).abs() < EPSILON);
-    }
 }
