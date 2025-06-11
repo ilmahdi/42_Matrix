@@ -14,15 +14,15 @@ impl Complex {
         Self { re, im }
     }
 
-    pub fn conjugate(&self) -> Self {
+    fn conjugate(&self) -> Self {
         Self::new(self.re, -self.im)
     }
 
-    pub fn norm_sq(&self) -> f32 {
+    fn norm_sq(&self) -> f32 {
         self.re * self.re + self.im * self.im
     }
 
-    pub fn norm(&self) -> f32 {
+    fn norm(&self) -> f32 {
         self.norm_sq().powf(0.5)
     }
 }
@@ -131,6 +131,9 @@ impl Scalar for Complex {
     }
     fn to_f32(self) -> f32 {
         self.norm()
+    }
+    fn conj(self) -> Self {
+        self.conjugate()
     }
 }
 

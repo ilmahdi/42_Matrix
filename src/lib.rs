@@ -44,7 +44,7 @@ pub fn angle_cos_complex(u: &Vector<Complex>, v: &Vector<Complex>) -> f32 {
     let n: usize = u.data().len();
 
     for i in 0..n {
-        dot += u[i].conjugate() * v[i];
+        dot += u[i].conj() * v[i];
     }
 
     let norm_u = u.norm();
@@ -226,21 +226,21 @@ mod tests {
     }
 
     #[test]
-   fn test_angle_cos_complex() {
-    let c_u1 = Vector::from([Complex::new(1.0, 0.0), Complex::new(0.0, 1.0)]);
-    let c_v1 = Vector::from([Complex::new(0.0, 1.0), Complex::new(1.0, 0.0)]);
-    let c_result1 = angle_cos_complex(&c_u1, &c_v1);
-    assert!((c_result1 - 0.0).abs() < EPSILON); // expected orthogonal in complex inner product
+    fn test_angle_cos_complex() {
+        let c_u1 = Vector::from([Complex::new(1.0, 0.0), Complex::new(0.0, 1.0)]);
+        let c_v1 = Vector::from([Complex::new(0.0, 1.0), Complex::new(1.0, 0.0)]);
+        let c_result1 = angle_cos_complex(&c_u1, &c_v1);
+        assert!((c_result1 - 0.0).abs() < EPSILON); // expected orthogonal in complex inner product
 
-    let c_u2 = Vector::from([Complex::new(1.0, 1.0)]);
-    let c_v2 = Vector::from([Complex::new(1.0, 1.0)]);
-    let c_result2 = angle_cos_complex(&c_u2, &c_v2);
-    assert!((c_result2 - 1.0).abs() < EPSILON); // same vector
+        let c_u2 = Vector::from([Complex::new(1.0, 1.0)]);
+        let c_v2 = Vector::from([Complex::new(1.0, 1.0)]);
+        let c_result2 = angle_cos_complex(&c_u2, &c_v2);
+        assert!((c_result2 - 1.0).abs() < EPSILON); // same vector
 
-    let c_u3 = Vector::from([Complex::new(1.0, 0.0)]);
-    let c_v3 = Vector::from([Complex::new(0.0, 0.0)]);
-    assert!(angle_cos_complex(&c_u3, &c_v3).is_nan()); // zero vector
-}
+        let c_u3 = Vector::from([Complex::new(1.0, 0.0)]);
+        let c_v3 = Vector::from([Complex::new(0.0, 0.0)]);
+        assert!(angle_cos_complex(&c_u3, &c_v3).is_nan()); // zero vector
+    }
 
     #[test]
     fn test_cross_product_scalar() {
@@ -275,58 +275,57 @@ mod tests {
         assert_eq!(cross_product(&u6, &v6), expected6);
     }
 
-#[test]
-fn test_cross_product_complex() {
-    let c_u1 = Vector::from([
-        Complex::new(1.0, 0.0),
-        Complex::new(0.0, 0.0),
-        Complex::new(0.0, 0.0),
-    ]);
-    let c_v1 = Vector::from([
-        Complex::new(0.0, 0.0),
-        Complex::new(1.0, 0.0),
-        Complex::new(0.0, 0.0),
-    ]);
-    let c_expected1 = Vector::from([
-        Complex::new(0.0, 0.0),
-        Complex::new(0.0, 0.0),
-        Complex::new(1.0, 0.0),
-    ]);
-    assert_eq!(cross_product(&c_u1, &c_v1), c_expected1);
+    #[test]
+    fn test_cross_product_complex() {
+        let c_u1 = Vector::from([
+            Complex::new(1.0, 0.0),
+            Complex::new(0.0, 0.0),
+            Complex::new(0.0, 0.0),
+        ]);
+        let c_v1 = Vector::from([
+            Complex::new(0.0, 0.0),
+            Complex::new(1.0, 0.0),
+            Complex::new(0.0, 0.0),
+        ]);
+        let c_expected1 = Vector::from([
+            Complex::new(0.0, 0.0),
+            Complex::new(0.0, 0.0),
+            Complex::new(1.0, 0.0),
+        ]);
+        assert_eq!(cross_product(&c_u1, &c_v1), c_expected1);
 
-    let c_u2 = Vector::from([
-        Complex::new(1.0, 1.0),
-        Complex::new(2.0, 2.0),
-        Complex::new(3.0, 3.0),
-    ]);
-    let c_v2 = Vector::from([
-        Complex::new(4.0, 4.0),
-        Complex::new(5.0, 5.0),
-        Complex::new(6.0, 6.0),
-    ]);
-    let c_expected2 = Vector::from([
-        Complex::new(0.0, -6.0),
-        Complex::new(0.0, 12.0),
-        Complex::new(0.0, -6.0),
-    ]);
-    assert_eq!(cross_product(&c_u2, &c_v2), c_expected2);
+        let c_u2 = Vector::from([
+            Complex::new(1.0, 1.0),
+            Complex::new(2.0, 2.0),
+            Complex::new(3.0, 3.0),
+        ]);
+        let c_v2 = Vector::from([
+            Complex::new(4.0, 4.0),
+            Complex::new(5.0, 5.0),
+            Complex::new(6.0, 6.0),
+        ]);
+        let c_expected2 = Vector::from([
+            Complex::new(0.0, -6.0),
+            Complex::new(0.0, 12.0),
+            Complex::new(0.0, -6.0),
+        ]);
+        assert_eq!(cross_product(&c_u2, &c_v2), c_expected2);
 
-    let c_u3 = Vector::from([
-        Complex::new(0.0, 1.0),
-        Complex::new(0.0, 0.0),
-        Complex::new(0.0, 0.0),
-    ]);
-    let c_v3 = Vector::from([
-        Complex::new(0.0, 0.0),
-        Complex::new(0.0, 1.0),
-        Complex::new(0.0, 0.0),
-    ]);
-    let c_expected3 = Vector::from([
-        Complex::new(0.0, 0.0),
-        Complex::new(0.0, 0.0),
-        Complex::new(-1.0, 0.0),
-    ]);
-    assert_eq!(cross_product(&c_u3, &c_v3), c_expected3);
-}
-
+        let c_u3 = Vector::from([
+            Complex::new(0.0, 1.0),
+            Complex::new(0.0, 0.0),
+            Complex::new(0.0, 0.0),
+        ]);
+        let c_v3 = Vector::from([
+            Complex::new(0.0, 0.0),
+            Complex::new(0.0, 1.0),
+            Complex::new(0.0, 0.0),
+        ]);
+        let c_expected3 = Vector::from([
+            Complex::new(0.0, 0.0),
+            Complex::new(0.0, 0.0),
+            Complex::new(-1.0, 0.0),
+        ]);
+        assert_eq!(cross_product(&c_u3, &c_v3), c_expected3);
+    }
 }

@@ -123,7 +123,7 @@ impl<K: Scalar> Vector<K> {
     pub fn dot(&self, v: &Vector<K>) -> K {
         let mut res = K::default();
         for (&a, &b) in self.data.iter().zip(v.data.iter()) {
-            res = res.mul_add(a, b);
+            res = res.mul_add(a.conj(), b);
         }
         res
     }
@@ -393,12 +393,21 @@ mod tests {
 
     #[test]
     fn test_dot_product_complex() {
-        // Test with complex numbers (Bonus Exercise 15)
-        let c_u = Vector::from([Complex::new(1.0, 0.0), Complex::new(0.0, 1.0)]);
-        let c_v = Vector::from([Complex::new(2.0, 0.0), Complex::new(0.0, 2.0)]);
-        let c_dot = c_u.dot(&c_v);
-        assert!((c_dot.re - 0.0).abs() < EPSILON);
-        assert!((c_dot.im - 0.0).abs() < EPSILON);
+        let u = Vector::from([Complex::new(1.0, 2.0)]);
+        let v = Vector::from([Complex::new(3.0, 4.0)]);
+
+        let dot = u.dot(&v);
+
+        assert!(
+            (dot.re - 11.0).abs() < EPSILON,
+            "Expected real part 11.0 but got {}",
+            dot.re
+        );
+        assert!(
+            (dot.im + 2.0).abs() < EPSILON,
+            "Expected imag part -2.0 but got {}",
+            dot.im
+        );
     }
 
     #[test]

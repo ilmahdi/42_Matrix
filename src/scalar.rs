@@ -25,6 +25,9 @@ pub trait Scalar:
     fn mul_add(self, a: Self, b: Self) -> Self {
         a * b + self
     }
+    fn conj(self) -> Self {
+        self
+    }
 }
 
 impl Scalar for f32 {
