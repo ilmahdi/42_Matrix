@@ -1,7 +1,7 @@
 use crate::scalar::Scalar;
 use crate::vector::Vector;
 use std::fmt::{Debug, Display, Formatter};
-use std::ops::{AddAssign, MulAssign, SubAssign};
+use std::ops::{AddAssign, Index, MulAssign, SubAssign};
 use std::result::Result;
 
 /* -------------------------------------------------------------------------- */
@@ -61,6 +61,14 @@ impl<K: Scalar> SubAssign for Matrix<K> {
 impl<K: Scalar> MulAssign<K> for Matrix<K> {
     fn mul_assign(&mut self, scalar: K) {
         self.scl(scalar)
+    }
+}
+
+impl<K: Scalar> Index<usize> for Matrix<K> {
+    type Output = Vec<K>;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.data[index]
     }
 }
 

@@ -21,7 +21,7 @@ fn main() {
     let args: Vec<String> = std::env::args().collect();
 
     if args.len() < 2 {
-        eprintln!("Usage: cargo run [vector|matrix]");
+        eprintln!("Usage: cargo run test-ex[00-15]");
         return;
     }
 
